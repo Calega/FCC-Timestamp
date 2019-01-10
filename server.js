@@ -24,7 +24,34 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-
+app.get("/api/timestamp/:date_string/", function(req, res) {
+  
+  var unix;
+  var utc;
+  var dateString = req.params.date_string;
+  
+  function isValidDate(d) {
+    return d instanceof Date && isFinite(d)
+  }
+  
+  if ( !isValidDate( new Date( dateString ) ) ) {
+      unix = null;
+      utc = "Invalid date";
+  } else {
+      unix = new Date( dateString ).getTime();
+      utc = new Date( dateString ).toUTCString();
+  }
+  
+  if (!dateString) {
+    unix = Date.now().getTime();
+    utc = Date.now().toUTCString();
+  } 
+  
+  res.json({ 
+    "unix" : unix,
+    "utc" : utc
+  });
+});
 
 // listen for requests :)
 var listener = app.listen(process.env.PORT, function () {
