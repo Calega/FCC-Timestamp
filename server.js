@@ -24,32 +24,19 @@ app.get("/api/hello", function (req, res) {
   res.json({greeting: 'hello API'});
 });
 
-app.get("/api/timestamp/:date_string/", function(req, res) {
+app.get("/api/timestamp/:date_string?/", function(req, res) {
   
-  var unix;
-  var utc;
-  var dateString = req.params.date_string;
+  var date = req.params.date_string ? new Date( req.params.date_string ) : new Date();
+  var isValidDate = isValidDate( date );
   
+  // Function to validate if the date instance is valid
   function isValidDate(d) {
     return d instanceof Date && isFinite(d)
   }
-  
-  if ( !isValidDate( new Date( dateString ) ) ) {
-      unix = null;
-      utc = "Invalid date";
-  } else {
-      unix = new Date( dateString ).getTime();
-      utc = new Date( dateString ).toUTCString();
-  }
-  
-  if (!dateString) {
-    unix = Date.now().getTime();
-    utc = Date.now().toUTCString();
-  } 
-  
+
   res.json({ 
-    "unix" : unix,
-    "utc" : utc
+    "unix" : !isValidDate ? null : date.getTime(),
+    "utc" : !isValidDate ? "Invalid date" : date.toUTCString()
   });
 });
 
